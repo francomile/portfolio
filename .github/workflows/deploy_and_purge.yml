@@ -1,4 +1,4 @@
-Name: Deploy Portfolio and Purge Fastly Cache
+name: Deploy Portfolio and Purge Fastly Cache
 
 on:
   push:
