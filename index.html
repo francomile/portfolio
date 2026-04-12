@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Photo Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+</head>
+<body>
+
+<header>
+    <h1>Portfolio</h1>
+    <p>Photography by Rubens</p>
+</header>
+
+<section class="gallery">
+    <img src="images/photo1.jpg" alt="Photo 1" onclick="openLightbox(this)">
+    <img src="images/photo2.jpg" alt="Photo 2" onclick="openLightbox(this)">
+    <img src="images/photo3.jpg" alt="Photo 3" onclick="openLightbox(this)">
+    <img src="images/photo4.jpg" alt="Photo 4" onclick="openLightbox(this)">
+    <img src="images/photo5.jpg" alt="Photo 5" onclick="openLightbox(this)">
+    <img src="images/photo6.jpg" alt="Photo 6" onclick="openLightbox(this)">
+    <img src="images/photo7.jpg" alt="Photo 7" onclick="openLightbox(this)">
+    <img src="images/photo8.jpg" alt="Photo 8" onclick="openLightbox(this)">
+    <img src="images/photo9.jpg" alt="Photo 9" onclick="openLightbox(this)">
+</section>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+    <span class="close">&times;</span>
+    <img id="lightbox-img">
+</div>
+
+<footer>
+    <p>©Rubens 2026</p>
+</footer>
+
+<script>
+function openLightbox(img) {
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+
+    lightbox.style.display = "flex";
+    lightboxImg.src = img.src;
+}
+
+function closeLightbox() {
+    document.getElementById("lightbox").style.display = "none";
+}
+</script>
+
+</body>
+</html>
