@@ -1,0 +1,78 @@
+Name: Deploy Portfolio and Purge Fastly Cache
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy_origin:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Sync portfolio-site to Origin 1  via rsync
+      - name: Deploy via rsync
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avzr --delete
+          path: portfolio-site/
+          remote_path: /var/www/portfolio/
+          remote_host: ${{ secrets.SSH_HOST_1 }}
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          remote_port: ${{ secrets.SSH_PORT }}
+
+      # Reload nginx in Origin 1
+      - name: Remote server commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST_1 }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            sudo systemctl reload nginx
+
+      # Sync portfolio-site to Origin 2 via rsync
+      - name: Deploy via rsync
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avzr --delete
+          path: portfolio-site/
+          remote_path: /var/www/portfolio/
+          remote_host: ${{ secrets.SSH_HOST_2 }}
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          remote_port: ${{ secrets.SSH_PORT }}
+
+      # Reload nginx in Origin 2
+      - name: Remote server commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST_2 }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            sudo systemctl reload nginx
+
+      # Purge Fastly cache (full) 
+      - name: Purge Fastly cache #1
+        run: |
+          curl -X POST "https://api.fastly.com/service/${{ secrets.FASTLY_SERVICE_ID }}/purge_all" \
+            -H "Fastly-Key: ${{ secrets.FASTLY_API_KEY }}" \
+            -H "Accept: application/json"
+
+      - name: Fastly Purge #2 (safety retry)
+        run: |
+          curl -X POST "https://api.fastly.com/service/${{ secrets.FASTLY_SERVICE_ID }}/purge_all" \
+            -H "Fastly-Key: ${{ secrets.FASTLY_API_KEY }}" \
+            -H "Accept: application/json"
+
+
+
+
